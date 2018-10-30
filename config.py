@@ -7,6 +7,8 @@ class Config(object):
     PORT = os.getenv("PORT", 8080)
     LOGGING_LEVEL = os.getenv("LOGGING_LEVEL", "INFO")
 
+    SANIC_APP_URL = os.getenv("SANIC_APP_URL", "http://localhost:8000")
+
 
 class DevelopmentConfig(Config):
     DEBUG = os.getenv("DEBUG", True)

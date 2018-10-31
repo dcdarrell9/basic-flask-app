@@ -1,10 +1,29 @@
 version: '3'
+
 services:
+
   basic-flask-app:
+    container_name: basic-flask-app
     build: ${PROJECTS_HOME}/basic-flask-app
     ports:
       - "8080:8080"
+    volumes:
+      - ${PROJECTS_HOME}/basic-flask-app
+    networks:
+      - test-env
+    environment:
+      - SANIC_APP_URL=http://basic-sanic-app:8000
+
   basic-sanic-app:
+    container_name: basic-sanic-app
     build: ${PROJECTS_HOME}/basic-sanic-app
     ports:
       - "8000:8000"
+    volumes:
+    - ${PROJECTS_HOME}/basic-sanic-app
+    networks:
+      - test-env
+
+networks:
+  test-env:
+    driver: bridge

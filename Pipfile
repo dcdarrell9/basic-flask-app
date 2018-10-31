@@ -9,6 +9,7 @@ structlog = "*"
 flask-api = "*"
 flask-cors = "*"
 requests = "*"
+gunicorn = "*"
 
 [dev-packages]
 

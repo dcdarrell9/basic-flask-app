@@ -1,13 +1,15 @@
 import time
 
-from flask import g, render_template
-from flask_api import FlaskAPI
+from flask import g, render_template, Flask
 from flask_cors import CORS
 from structlog import get_logger
 
+from config import Config
+
 logger = get_logger()
 
-app = FlaskAPI(__name__)
+app = Flask(__name__)
+app.config.from_object(Config)
 app.strict_slashes = False
 CORS(app)
 

@@ -1,5 +1,7 @@
 import json
 
+import docker
+import itertools
 import requests
 from flask import Blueprint
 from requests.exceptions import HTTPError
@@ -46,3 +48,20 @@ def health():
 def docker_id_health(docker_id):
     resp = get_docker_health(docker_id)
     return json.dumps(resp)
+
+
+@health_bp.route("/test")
+def docker_test():
+    try:
+        logger.debug('Getting docker client')
+        client = docker.from_env()
+        all_images = [image.tags for image in client.images.list()]
+
+        non_empty_images = [item for item in list(itertools.chain(*all_images)) if 'basic' in item]
+
+        return json.dumps({
+            "list_of_all_images": str(all_images),
+            "list_of_all_non_empty_images": str(non_empty_images)
+        })
+    except Exception:
+        return json.dumps({"Failed to get": "any response"})

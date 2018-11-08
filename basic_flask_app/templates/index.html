@@ -1,10 +1,14 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <title>Home page</title>
 </head>
 <body>
+    <form method=post action="">
+        <input name=_csrf_token type=hidden value="{{ csrf_token() }}">
+    </form>
     <h1>Hello Emilio</h1>
 </body>
 </html>

@@ -14,12 +14,12 @@ health_bp = Blueprint('health_bp', __name__, static_folder='static', template_fo
 logger = get_logger()
 
 
-def get_docker_health(docker_id):
+def get_docker_health(docker_id, port):
     logger.debug('Retrieving docker health from sanic app')
     session = requests.Session()
     session.trust_env = False
     url = f'{app.config["SANIC_APP_URL"]}/health'
-    url2 = f'http://{docker_id}:8000/health'
+    url2 = f'http://{docker_id}:{port}/health'
     response = session.get(url)
     response2 = session.get(url2)
 
@@ -39,29 +39,32 @@ def get_docker_health(docker_id):
     }
 
 
+def get_docker_image_tags():
+    try:
+        logger.debug('Getting docker images')
+        client = docker.from_env()
+        all_images = [image.tags for image in client.images.list()]
+        non_empty_images = [item for item in list(itertools.chain(*all_images)) if 'basic-flask-app_' in item]
+
+        return non_empty_images
+
+    except HTTPError:
+        logger.exception(f'HTTP error')
+        return {"Failed to get": "any response"}
+
+
 @health_bp.route("/", methods=['GET'])
 def health():
     return json.dumps({"status": "ok"})
 
 
-@health_bp.route("/<docker_id>")
-def docker_id_health(docker_id):
-    resp = get_docker_health(docker_id)
+@health_bp.route("/<docker_id>/<port>")
+def docker_id_health(docker_id, port):
+    resp = get_docker_health(docker_id, port)
     return json.dumps(resp)
 
 
-@health_bp.route("/test")
-def docker_test():
-    try:
-        logger.debug('Getting docker client')
-        client = docker.from_env()
-        all_images = [image.tags for image in client.images.list()]
-
-        non_empty_images = [item for item in list(itertools.chain(*all_images)) if 'basic' in item]
-
-        return json.dumps({
-            "list_of_all_images": str(all_images),
-            "list_of_all_non_empty_images": str(non_empty_images)
-        })
-    except Exception:
-        return json.dumps({"Failed to get": "any response"})
+@health_bp.route("/images")
+def docker_images():
+    resp = get_docker_image_tags()
+    return json.dumps(resp)

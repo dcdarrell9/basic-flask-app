@@ -25,6 +25,13 @@ update: check-env
 		fi; echo ""; \
 	done
 
+lint:
+	pipenv run flake8
+	pipenv check ./basic_flask_app ./tests
+
+test: lint
+	pipenv run pytest
+
 start:
 	@ printf "\n[${YELLOW} Bringing up docker compose ${NO_COLOR}]\n"
 	docker-compose up --no-deps

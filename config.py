@@ -9,6 +9,8 @@ class Config(object):
 
     SANIC_APP_URL = os.getenv("SANIC_APP_URL", "http://basic-sanic-app:8000")
 
+    SECRET_KEY = os.getenv('SECRET_KEY', 'test')
+
 
 class DevelopmentConfig(Config):
     DEBUG = os.getenv("DEBUG", True)
